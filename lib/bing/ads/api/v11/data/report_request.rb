@@ -25,31 +25,31 @@ module Bing
 
             class << self
               def prepare(type, report_request_raw)
-                report_request_raw[:columns] = prepare_columns(
-                  columns: report_request_raw[:columns],
-                  type: type.to_s.classify
-                )
-
-                report_request_raw[:scope] = prepare_scope(
-                  account_ids: report_request_raw[:account_ids]
-                )
-
-                report_request_raw[:time] = prepare_time_period(
-                  from_date: report_request_raw[:from_date],
-                  to_date:   report_request_raw[:to_date]
-                )
-
-                report_request_raw.except!(:from_date, :to_date, :account_ids)
-
-                report_request = Bing::Ads::Utils.sort_keys(report_request_raw, KEYS_ORDER)
+                if report_request_raw[:account_ids].nil?
+                  scope = nil
+                else
+                  scope = {'ins0:AccountIds' => {'ins0:long' => report_request_raw[:account_ids]}}
+                end
+                
                 namespace_identifier = Bing::Ads::API::V11::NAMESPACE_IDENTIFIER
-                {
-                  report_request: Bing::Ads::Utils.camelcase_keys(report_request),
-                  :attributes! => {
-                    report_request: {
-                      "xmlns:i" => "http://www.w3.org/2001/XMLSchema-instance",
-                      "i:type" => "#{namespace_identifier}:#{type.to_s.classify}ReportRequest"
-                    }
+                {report_request:
+                  {
+                    :'@xsi:type' => "#{namespace_identifier}:#{type.to_s.classify}ReportRequest",
+                    :Format => report_request_raw[:format],
+                    :Language => report_request_raw[:language],
+                    :ReportName => report_request_raw[:report_name],
+                    :ReturnOnlyCompleteData => report_request_raw[:return_only_complete_data],
+                    :Aggregation => report_request_raw[:aggregation],
+                    :Columns =>  prepare_columns(
+                                         columns: report_request_raw[:columns],
+                                         type: type.to_s.classify
+                                       ),
+                    :Filter => nil,
+                    :Scope => scope,
+                    :Time => prepare_time_period(
+                      from_date: report_request_raw[:from_date],
+                      to_date:   report_request_raw[:to_date]
+                    )
                   }
                 }
               end
@@ -59,24 +59,6 @@ module Bing
               def prepare_columns(type:, columns:)
                 {
                   "#{type}ReportColumn" => columns.map(&:to_s).map(&:camelcase)
-                }
-              end
-
-              def prepare_scope(account_ids:)
-                account_ids_elements =
-                  if account_ids.nil?
-                    nil
-                  else
-                    {
-                      'a1:long' => account_ids,
-                      '@xmlns:a1' => 'http://schemas.microsoft.com/2003/10/Serialization/Arrays'
-                    }
-                  end
-
-                {
-                  account_ids: account_ids_elements,
-                  ad_groups: nil,
-                  campaigns: nil
                 }
               end
 

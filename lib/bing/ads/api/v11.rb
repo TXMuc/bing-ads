@@ -3,7 +3,7 @@ module Bing
     module API
       # Bing::Ads::API::V11
       module V11
-        NAMESPACE_IDENTIFIER = :v11
+        NAMESPACE_IDENTIFIER = :tns
 
         def self.constants
           @_config || fail('Error loading bing ads gem')

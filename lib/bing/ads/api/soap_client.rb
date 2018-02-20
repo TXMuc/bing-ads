@@ -47,6 +47,8 @@ module Bing
             headers[ns('CustomerAccountId')] = account_id
             headers[ns('CustomerId')] = customer_id
             headers[ns('DeveloperToken')] = developer_token
+            headers[ns('UserName')] = nil
+            headers[ns('Password')] = nil
           elsif username && password
             headers[ns('CustomerAccountId')] = account_id
             headers[ns('CustomerId')] = customer_id
