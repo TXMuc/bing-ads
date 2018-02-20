@@ -35,6 +35,9 @@ module Bing
                 {report_request:
                   {
                     :'@xsi:type' => "#{namespace_identifier}:#{type.to_s.classify}ReportRequest",
+                    :ExcludeColumnHeaders => report_request_raw[:exclude_column_headers],
+                    :ExcludeReportFooter => report_request_raw[:exclude_report_footer],
+                    :ExcludeReportHeader => report_request_raw[:exclude_report_header],
                     :Format => report_request_raw[:format],
                     :Language => report_request_raw[:language],
                     :ReportName => report_request_raw[:report_name],
